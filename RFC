@@ -1,0 +1,63 @@
+Grant Westerholm 190462000
+Erica Ancajas 180545710			  
+
+September 29, 2021
+
+Assignment 1 Document
+
+Table of Contents
+  1. Introduction
+    1.1 Purpose
+    1.2 Definitions
+  2. Protocol Description
+  3. Message Format
+  4. Synchronization Policies
+  5. Error Responsibilities
+  6. Border-Cases
+
+1. Introduction
+The program includes a client-server system. Clients will request a connection with the server and send different types of messages through an established connection. Server will accept multiple requests for connection, maintain an appropriate data structure that holds data received from the client, and process messages from the client.
+
+  1.1 Purpose
+  This document serves to describe the detailed functionality of the program. It is a client-server application using the stream socket API of Java. This application is intended to support clients’ ability to store “notes” on servers and to request “notes” that contain certain properties. In this specification, the protocol and format of messages is described. Furthermore, it details synchronization policies, client and server reactions to various errors, and border-case behaviour. 
+
+  1.2 Definitions
+  Connection: A transport layer virtual circuit established between two programs for the purpose of communication.
+  Client: A component of the program that establishes connections, which are requests, for the purpose of sending it to the server.
+  Request: A message sent from the client to the server. It specifies an operation for the server to perform.
+  Server: The component of the program that receives requests from the client and performs the specified operations by sending back responses.
+
+2. Protocol Description
+The program follows a request/response protocol. The server does not take any form of action until a request is received from the client. Clients will request a connection with the server and send different types of messages through established connections which will be discussed below in section 3. Once the client submits a request, the server will operate and respond accordingly. As soon as the client receives the response, it displays it to the user.
+
+3. Message Format
+Requests the client sends are in one of the following formats:
+
+1. POST <note> 
+2. GET <request> 
+3. PIN/UNPIN <data> 
+4. CLEAR/SHAKE
+5. DISCONNECT
+
+Server response messages will be the text that is stored in the requested notes or an error message.
+
+4. Synchronization Policies
+We will be using java’s multithreading capabilities by creating synchronized blocks using the synchronized keyword.
+
+5. Error Responsibilities
+The client implements preventative methods to reduce the number of errors from occurring.
+
+Server-side errors: 
+  - If note receipt can’t be confirmed
+  - If PIN, UNPIN, SHAKE, CLEAR are called with no posts
+  - If the location of the post is invalid
+  - If the pin location is outside the domains of width and height
+
+Client-side errors: 
+  - The IP address given doesn’t exist
+  - If the port number is invalid
+  - Empty reply from server
+  - Request from client is in wrong format
+
+6. Border-Cases
+Requests the client sends may be in correct format, however, there are no entries that satisfy the request, thus the client will receive a message in order to prevent an error. 
