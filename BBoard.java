@@ -18,7 +18,7 @@ public class BBoard {
     public static ArrayList<Post> posts = new ArrayList<Post>();
     public static ArrayList<Pin> pins = new ArrayList<Pin>();
     static String[] colors;
-    static String seperator = "$$";
+    static String seperator = "@@";
              
     public static void main(String[] args) throws IOException {
         int port = Integer.parseInt(args[0]);
@@ -26,6 +26,7 @@ public class BBoard {
 	width = Integer.parseInt(args[1]);
 
         
+	
         if (args.length > 3) {
             String[] colors = new String[args.length - 3];
             int i = 3;
@@ -62,9 +63,10 @@ public class BBoard {
                 
                 while(true) {
                     String client = input.readLine();
-                    String[] temp = client.split(seperator);
-                    boolean result;
-                    
+                    System.out.println(client);
+                    String[] temp = client.trim().split(seperator);
+                    boolean result = false;
+                    System.out.println("key = " + temp[0]);
                     switch(temp[0]) {
                         case "UNPIN":
                             result = unpin(Integer.parseInt(temp[1]), 
@@ -92,7 +94,6 @@ public class BBoard {
                             for (Pin pin : pins) {
                                 message = message + pin.getPinstr() + "\n";
                             } 
-                            
                             output.println(message);
                             
                         case "SHAKE":
@@ -101,11 +102,12 @@ public class BBoard {
                         case "CLEAR":
                             clear();
                         case "POST":
+                        	System.out.println("length = " + temp.length);
                             if (temp.length == 7){
                                 result = makePost(Integer.parseInt(temp[1]), 
                            Integer.parseInt(temp[2]), Integer.parseInt(temp[3]), 
                            Integer.parseInt(temp[4]), temp[5], temp[6]);
-                            } else {
+                            } else if (temp.length == 6) {
                                 result = makePost(Integer.parseInt(temp[1]), 
                            Integer.parseInt(temp[2]), Integer.parseInt(temp[3]), 
                            Integer.parseInt(temp[4]), "", temp[5]);
@@ -119,26 +121,28 @@ public class BBoard {
                             }
                         case "GET":
                             String c, co, r;
-                            
-                            if ((temp[1].split("=")).length < 2) {
-                                c = "";
-                            } else {
-                                c = temp[1].split("=")[1];
+                            if (temp.length == 4) {
+	                            if ((temp[1].split("=")).length < 2) {
+	                                c = "";
+	                            } else {
+	                                c = temp[1].split("=")[1];
+	                            }
+	                            if ((temp[2].split("=")).length < 2) {
+	                                r = "";
+	                            } else {
+	                                r = temp[2].split("=")[1];
+	                            }
+	                            if ((temp[1].split("=")).length < 2) {
+	                                co = "";
+	                            } else {
+	                                co = temp[1].split("=")[1];
+	                            }
+	                            
+	                            String info = get(c,r,co);
+	                            
+	                            output.println(info);
+	                            
                             }
-                            if ((temp[2].split("=")).length < 2) {
-                                r = "";
-                            } else {
-                                r = temp[2].split("=")[1];
-                            }
-                            if ((temp[1].split("=")).length < 2) {
-                                co = "";
-                            } else {
-                                co = temp[1].split("=")[1];
-                            }
-                            
-                            String info = get(c,r,co);
-                            
-                            output.println(info);
                             
                     }
                 }
@@ -389,3 +393,8 @@ public class BBoard {
         return out;
     }
 }
+
+
+
+
+ 
