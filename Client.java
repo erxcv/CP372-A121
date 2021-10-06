@@ -15,8 +15,9 @@ import java.net.Socket;
  * @author grant
  */
 public class Client extends javax.swing.JFrame {
-    String seperator = "$$";
+    String seperator = "@@";
     public Socket socket;
+    public boolean connected = false;
     
     public Client() {
         initComponents();
@@ -448,12 +449,16 @@ public class Client extends javax.swing.JFrame {
             System.out.println("a");
             PrintWriter output = new PrintWriter(socket.getOutputStream(), 
                                                                           true);
+            System.out.println("b");
             BufferedReader input = new BufferedReader(new 
                                     InputStreamReader(socket.getInputStream()));
             
+            System.out.println("c");
             String message = "PIN" + seperator + x + seperator + y;
             output.println(message);
+            System.out.println("d");
             String response = input.readLine();
+            System.out.println("e");
             txtOutput.setText(response);
             
         } catch (IOException | NumberFormatException | NullPointerException e) {
@@ -473,7 +478,7 @@ public class Client extends javax.swing.JFrame {
             
             txtOutput.setText(response);
             
-        } catch (IOException e){
+        } catch (IOException | NullPointerException e){
         }
     }                                        
 
@@ -489,7 +494,7 @@ public class Client extends javax.swing.JFrame {
             
             txtOutput.setText(response);
             
-        } catch (IOException e){
+        } catch (IOException | NullPointerException e){
         }
     }                                        
 
@@ -507,13 +512,7 @@ public class Client extends javax.swing.JFrame {
 		txtOutput.setText("There are currrently no pins on the board.");
                 
             } else {
-		String[] pins = response.split(seperator);
-                String out = "Pins on the board:\n";
-                
-		for (int i = 0; i < pins.length; i++) {
-                    out = out + pins[i] + "\n";
-                }
-                txtOutput.setText(out);
+                txtOutput.setText(response);
             }
 	} catch (IOException | NullPointerException e) {
 	}
@@ -527,17 +526,18 @@ public class Client extends javax.swing.JFrame {
             port = Integer.parseInt(txtPort.getText()); 
             ip = txtIP.getText();
             
-            if (socket == null) {
+            if (!connected) {
                 socket = new Socket(ip, port);
                 if (socket.isConnected()) {
                     txtOutput.setText("You have succesfully connected to "
                                                               + "the server.");
+                    connected = true;
                 }
             } else {
                 txtOutput.setText("You are already connected to \nthe specified "
                                                                    + "server.");
             }
-        } catch (NumberFormatException | IOException e) {
+        } catch (NumberFormatException | IOException | NullPointerException e) {
             txtOutput.setText("Connection failed. Please check your \nentered "
                                                 + "information and try again.");
         }
@@ -547,6 +547,7 @@ public class Client extends javax.swing.JFrame {
         try {
             socket.close();
 	    txtOutput.setText("Disconnected successfully.");
+            connected = false;
         } catch (IOException e) {
             txtOutput.setText("Disconnecting from the server failed.");
 	} catch (NullPointerException e1) {
@@ -575,7 +576,7 @@ public class Client extends javax.swing.JFrame {
                 BufferedReader input = new BufferedReader(new 
                                    InputStreamReader(socket.getInputStream()));
 
-                String message = "POST" + x + seperator + y + seperator + h + 
+                String message = "POST" + seperator + x + seperator + y + seperator + h + 
                                   seperator + w + seperator + c + seperator + p;
                 
                 output.println(message);
@@ -585,7 +586,7 @@ public class Client extends javax.swing.JFrame {
             
         } catch (NumberFormatException e){
             txtOutput.setText("Given input invalid or empty.");
-        } catch (IOException e1) {
+        } catch (IOException | NullPointerException e1) {
         }
     }                                       
 
@@ -596,24 +597,21 @@ public class Client extends javax.swing.JFrame {
        color = txtGetColor.getText();
        refers = txtGetRefers.getText();
        
-       if (color.equals("") && refers.equals("") && contains.equals("")) {
-           txtOutput.setText("Please enter at least one of the \ngiven fields.");
-       } else {
-           try {
-                PrintWriter output = new PrintWriter(socket.getOutputStream(), 
+       
+        try {
+            PrintWriter output = new PrintWriter(socket.getOutputStream(), 
                                                                          true);
-                BufferedReader input = new BufferedReader(new 
-                                   InputStreamReader(socket.getInputStream()));
-                String message = "GET" + seperator + "color=" + color + 
+            BufferedReader input = new BufferedReader(new 
+                                    InputStreamReader(socket.getInputStream()));
+            String message = "GET" + seperator + "color=" + color + 
                         seperator + "refers to=" + refers + seperator 
                                                        + "contains=" + contains;
-                output.println(message);
-                String response = input.readLine();
-                txtOutput.setText(response);
+            output.println(message);
+            String response = input.readLine();
+            txtOutput.setText(response);
                 
-           } catch (IOException e) {
-           }
-       }
+        } catch (IOException | NullPointerException e) {
+        }
     }                                          
 
     /**
