@@ -385,6 +385,13 @@ public class BBoard {
                 }
             }
         }
+	    
+	if (contains.equals("") && color.equals("") && refers.equals("")) {
+            for (Post post : posts) {
+                out = out + post.getContent() + "\n\n";
+            }
+            return out;
+        }
         
         for (Post post : temp) {
             out = out + post.getContent() + "\n\n";
